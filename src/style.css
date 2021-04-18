@@ -1,5 +1,17 @@
-html,
-body {
+*,
+*::before,
+*::after {
   margin: 0;
   height: 100vh;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
 }
