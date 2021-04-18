@@ -93,34 +93,58 @@ const meshGuiConfig = {
   position: {
     x: {
       name: 'X axis',
-      min: -3,
-      max: 3,
-      step: 0.1,
     },
     y: {
       name: 'Y axis',
-      min: -3,
-      max: 3,
-      step: 0.1,
     },
     z: {
       name: 'Z axis',
-      min: -3,
-      max: 3,
-      step: 0.1,
+    },
+  },
+  rotation: {
+    x: {
+      name: 'X axis',
+    },
+    y: {
+      name: 'Y axis',
+    },
+    z: {
+      name: 'Z axis',
     },
   },
 }
 const guify = (mesh, config) => {
+  const defaultValues = {
+    position: {
+      min: -3,
+      max: 3,
+      step: 0.1,
+    },
+    rotation: {
+      min: 0,
+      max: Math.PI * 2,
+      step: Math.PI * 0.1,
+    },
+  }
+
   Object.keys(config).forEach(property => {
-    const guiFolder = gui.addFolder(property)
-    Object.keys(config[property]).forEach(subProperty => {
-      const i = guiFolder.add(mesh[property], subProperty)
-      const values = config[property][subProperty]
-      Object.entries(values).forEach(([method, value]) => {
-        i[method](value)
-      })
-    })
+    switch (property) {
+      case 'position':
+      case 'rotation':
+        const guiFolder = gui.addFolder(property)
+        Object.keys(config[property]).forEach(subProperty => {
+          const i = guiFolder.add(mesh[property], subProperty)
+          const defaultConfig = defaultValues[property]
+          const values = config[property][subProperty]
+          Object.entries(defaultConfig).forEach(([method, value]) => {
+            const v = values[method] ? values[method] : value
+            i[method](v)
+          })
+        })
+        break
+      default:
+        console.warn(`The property ${property} is not recognized`)
+    }
   })
 }
 guify(mesh, meshGuiConfig)
