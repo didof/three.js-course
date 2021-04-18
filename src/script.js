@@ -80,18 +80,50 @@ window.addEventListener('dblclick', toggleFullscreen)
 /**
  * Debug
  */
-const guiPosition = gui.addFolder('position')
-guiPosition.add(mesh.position, 'x').min(-3).max(3).step(0.1).name('X axis')
-guiPosition.add(mesh.position, 'y').min(-3).max(3).step(0.1).name('Y axis')
-guiPosition.add(mesh.position, 'z').min(-3).max(3).step(0.1).name('Z axis')
-const guiMesh = gui.addFolder('mesh')
-guiMesh.add(mesh, 'visible')
-guiMesh.add(mesh.material, 'wireframe')
-guiMesh.addColor(parameters, 'color').onChange(() => {
-  mesh.material.color.set(parameters.color)
-})
-const guiAnimations = gui.addFolder('animations')
-guiAnimations.add(parameters, 'spin')
+// const guiMesh = gui.addFolder('mesh')
+// guiMesh.add(mesh, 'visible')
+// guiMesh.add(mesh.material, 'wireframe')
+// guiMesh.addColor(parameters, 'color').onChange(() => {
+//   mesh.material.color.set(parameters.color)
+// })
+// const guiAnimations = gui.addFolder('animations')
+// guiAnimations.add(parameters, 'spin')
+
+const meshGuiConfig = {
+  position: {
+    x: {
+      name: 'X axis',
+      min: -3,
+      max: 3,
+      step: 0.1,
+    },
+    y: {
+      name: 'Y axis',
+      min: -3,
+      max: 3,
+      step: 0.1,
+    },
+    z: {
+      name: 'Z axis',
+      min: -3,
+      max: 3,
+      step: 0.1,
+    },
+  },
+}
+const guify = (mesh, config) => {
+  Object.keys(config).forEach(property => {
+    const guiFolder = gui.addFolder(property)
+    Object.keys(config[property]).forEach(subProperty => {
+      const i = guiFolder.add(mesh[property], subProperty)
+      const values = config[property][subProperty]
+      Object.entries(values).forEach(([method, value]) => {
+        i[method](value)
+      })
+    })
+  })
+}
+guify(mesh, meshGuiConfig)
 
 const clock = new THREE.Clock()
 const tick = () => {
