@@ -2,6 +2,20 @@ import './style.css'
 
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import gsap from 'gsap'
+import * as dat from 'dat.gui'
+
+/**
+ * Debug
+ */
+const gui = new dat.GUI({ closed: false, width: window.innerWidth / 3 })
+const parameters = {
+  color: 0xffffff,
+  spin() {
+    gsap.to(mesh.rotation, { duration: 2, y: mesh.rotation.y + Math.PI * 2 })
+    gsap.to(mesh.position, { duration: 1, y: mesh.position.y + 0.1 })
+  },
+}
 
 const canvas = document.getElementById('canvas')
 const sizes = {
@@ -15,12 +29,12 @@ const sizes = {
 const scene = new THREE.Scene()
 
 const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: 0xfffff })
+const material = new THREE.MeshBasicMaterial({ color: parameters.color })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
 const camera = new THREE.PerspectiveCamera(75, sizes.getRatio(), 0.1, 100)
-camera.position.z = 2
+camera.position.z = 5
 
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -43,7 +57,7 @@ window.addEventListener('resize', () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-window.addEventListener('dblclick', () => {
+const toggleFullscreen = () => {
   const fullscreenElement =
     document.fullscreenElement || document.webkitFullscreenElement
   if (!fullscreenElement) {
@@ -59,14 +73,32 @@ window.addEventListener('dblclick', () => {
       document.webkitExitFullscreen()
     }
   }
+}
+
+window.addEventListener('dblclick', toggleFullscreen)
+
+/**
+ * Debug
+ */
+const guiPosition = gui.addFolder('position')
+guiPosition.add(mesh.position, 'x').min(-3).max(3).step(0.1).name('X axis')
+guiPosition.add(mesh.position, 'y').min(-3).max(3).step(0.1).name('Y axis')
+guiPosition.add(mesh.position, 'z').min(-3).max(3).step(0.1).name('Z axis')
+const guiMesh = gui.addFolder('mesh')
+guiMesh.add(mesh, 'visible')
+guiMesh.add(mesh.material, 'wireframe')
+guiMesh.addColor(parameters, 'color').onChange(() => {
+  mesh.material.color.set(parameters.color)
 })
+const guiAnimations = gui.addFolder('animations')
+guiAnimations.add(parameters, 'spin')
 
 const clock = new THREE.Clock()
 const tick = () => {
   controls.update()
   const et = clock.getElapsedTime()
 
-  mesh.rotation.y = et
+  // mesh.rotation.y = et
 
   renderer.render(scene, camera)
   requestAnimationFrame(tick)
