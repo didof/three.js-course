@@ -3,12 +3,11 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import gsap from 'gsap'
-import * as dat from 'dat.gui'
+import gui, { guify } from './gui'
 
 /**
- * Debug
+ * debug
  */
-const gui = new dat.GUI({ closed: false, width: window.innerWidth / 3 })
 const parameters = {
   color: 0xffffff,
   spin() {
@@ -17,6 +16,9 @@ const parameters = {
   },
 }
 
+/**
+ * constants
+ */
 const canvas = document.getElementById('canvas')
 const sizes = {
   width: window.innerWidth,
@@ -26,6 +28,9 @@ const sizes = {
   },
 }
 
+/**
+ * Scene
+ */
 const scene = new THREE.Scene()
 
 const geometry = new THREE.BoxGeometry(1, 1, 1)
@@ -33,17 +38,25 @@ const material = new THREE.MeshBasicMaterial({ color: parameters.color })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
+/**
+ * Camera
+ */
 const camera = new THREE.PerspectiveCamera(75, sizes.getRatio(), 0.1, 100)
 camera.position.z = 5
-
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.update()
 
+/**
+ * Renderer
+ */
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+/**
+ * Functionalities
+ */
 window.addEventListener('resize', () => {
   sizes.width = window.innerWidth
   sizes.height = window.innerHeight
@@ -80,74 +93,15 @@ window.addEventListener('dblclick', toggleFullscreen)
 /**
  * Debug
  */
-// const guiMesh = gui.addFolder('mesh')
-// guiMesh.add(mesh, 'visible')
-// guiMesh.add(mesh.material, 'wireframe')
-// guiMesh.addColor(parameters, 'color').onChange(() => {
-//   mesh.material.color.set(parameters.color)
-// })
-// const guiAnimations = gui.addFolder('animations')
-// guiAnimations.add(parameters, 'spin')
-
-const meshGuiConfig = {
-  position: {
-    x: {
-      name: 'X axis',
-    },
-    y: {
-      name: 'Y axis',
-    },
-    z: {
-      name: 'Z axis',
-    },
-  },
-  rotation: {
-    x: {
-      name: 'X axis',
-    },
-    y: {
-      name: 'Y axis',
-    },
-    z: {
-      name: 'Z axis',
-    },
-  },
-}
-const guify = (mesh, config) => {
-  const defaultValues = {
-    position: {
-      min: -3,
-      max: 3,
-      step: 0.1,
-    },
-    rotation: {
-      min: 0,
-      max: Math.PI * 2,
-      step: Math.PI * 0.1,
-    },
-  }
-
-  Object.keys(config).forEach(property => {
-    switch (property) {
-      case 'position':
-      case 'rotation':
-        const guiFolder = gui.addFolder(property)
-        Object.keys(config[property]).forEach(subProperty => {
-          const i = guiFolder.add(mesh[property], subProperty)
-          const defaultConfig = defaultValues[property]
-          const values = config[property][subProperty]
-          Object.entries(defaultConfig).forEach(([method, value]) => {
-            const v = values[method] ? values[method] : value
-            i[method](v)
-          })
-        })
-        break
-      default:
-        console.warn(`The property ${property} is not recognized`)
-    }
-  })
-}
-guify(mesh, meshGuiConfig)
+const guiMesh = gui.addFolder('mesh')
+guiMesh.add(mesh, 'visible')
+guiMesh.add(mesh.material, 'wireframe')
+guiMesh.addColor(parameters, 'color').onChange(() => {
+  mesh.material.color.set(parameters.color)
+})
+const guiAnimations = gui.addFolder('animations')
+guiAnimations.add(parameters, 'spin')
+guify(mesh)
 
 const clock = new THREE.Clock()
 const tick = () => {
