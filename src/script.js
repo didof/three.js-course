@@ -14,13 +14,47 @@ const sizes = {
 
 const scene = new THREE.Scene()
 
-const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: 0xfffff })
+// const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 2, 2, 2)
+
+// const positionArray = new Float32Array(9)
+// positionArray[0] = 0
+// positionArray[1] = 0
+// positionArray[2] = 0
+
+// positionArray[3] = 0
+// positionArray[4] = 1
+// positionArray[5] = 0
+
+// positionArray[6] = 1
+// positionArray[7] = 0
+// positionArray[8] = 0
+
+// triangle
+// const geometry = new THREE.BufferGeometry()
+// const positionArray = new Float32Array([0, 0, 0, 0, 1, 0, 0, 0, 1])
+// const positionAttribute = new THREE.BufferAttribute(positionArray, 3)
+// geometry.setAttribute('position', positionAttribute)
+
+const geometry = new THREE.BufferGeometry()
+const count = 10
+const totalVertices = count * 3
+const totalXYZ = totalVertices * 3
+const positionsArray = new Float32Array(totalXYZ)
+for (let i = 0; i <= totalXYZ; i++) {
+  positionsArray[i] = Math.random() - 0.5
+}
+const positionAttribute = new THREE.BufferAttribute(positionsArray, 3)
+geometry.setAttribute('position', positionAttribute)
+
+const material = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+  wireframe: true,
+})
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
 const camera = new THREE.PerspectiveCamera(75, sizes.getRatio(), 0.1, 100)
-camera.position.z = 2
+camera.position.z = 3
 
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -65,8 +99,6 @@ const clock = new THREE.Clock()
 const tick = () => {
   controls.update()
   const et = clock.getElapsedTime()
-
-  mesh.rotation.y = et
 
   renderer.render(scene, camera)
   requestAnimationFrame(tick)
