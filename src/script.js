@@ -54,6 +54,7 @@ const sizes = {
  *
  *
  * ~ Method 2 ~ TextureLoader
+ *
  * const textureLoader = new THREE.TextureLoader()
  * const load = () => console.log('load')
  * const progress = () => console.log('progress')
@@ -105,6 +106,14 @@ colorTexture.magFilter = THREE.NearestFilter
  *
  * colorTexture.magFilter = THREE.LinearFilter // default
  * colorTexture.magFilter = THREE.NearestFilter // better performance
+ *
+ *
+ *
+ * ~ Performance ~
+ *
+ * jpg > png, performance speaking
+ * Compress textures: https://tinypng.com/
+ * Because of mipMapping (splitting in half the texture until 1x1) it's reccommended to use pow of 2 sizes.
  */
 
 /**
